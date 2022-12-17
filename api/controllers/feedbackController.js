@@ -1,5 +1,5 @@
 const Feedback = require("../../database/entities/Feedback");
-// const PagedModel = require("../models/PagedModel");
+const PagedModel = require("../models/PagedModel");
 const ResponseModel = require("../models/ResponseModel");
 const { isValidObjectId, Types } = require("mongoose");
 
@@ -35,6 +35,7 @@ async function getAllFeedbacks(req, res) {
 }
 
 async function deleteFeedback(req, res) {
+  // console.log(req.params, `aaa`);
   if (isValidObjectId(req.params.id)) {
     try {
       const feedback = await Feedback.findByIdAndDelete(req.params.id);
@@ -84,53 +85,59 @@ async function updateFeedback(req, res) {
   }
 }
 
-// async function getPagingMenus(req, res) {
-//   let pageSize = req.query.pageSize || 10;
-//   let pageIndex = req.query.pageIndex || 1;
-//   console.log(req.query.search);
-//   let searchObj = {};
-//   if (req.query.search) {
-//     searchObj = {
-//       menuName: { $regex: ".*" + req.query.search + ".*" },
-//     };
-//   }
+async function getPagingFeedbacks(req, res) {
+  // console.log(`aaa`, req.query);
+  let pageSize = req.query.pageSize || 10;
+  let pageIndex = req.query.pageIndex || 1;
+  // console.log(typeof req.query.search);
+  let searchObj = {};
+  if (req.query.search) {
+    // console.log(`co searchObj`);
+    searchObj = {
+      feedbackName: { $regex: ".*" + req.query.search + ".*" },
+    };
+  }
+  console.log(searchObj);
 
-//   try {
-//     let menus = await Menus.find(searchObj)
-//       .skip(pageSize * pageIndex - pageSize)
-//       .limit(parseInt(pageSize))
-//       .populate("user")
-//       .sort({ createdTime: "desc" });
-//     let arrayMenus = [];
-//     for (let i = 0; i < menus.length; i++) {
-//       if (menus[i].parent != null) {
-//         let parentName = menus.find(
-//           (item) => item.id.toString() == menus[i].parent.toString()
-//         );
-//         menus[i].parent = parentName;
-//       }
-//     }
-//     menus = menus.map((menu) => {
-//       // console.log(menus)
-//       if (menu.user != undefined && menu.user != null && menu.user != "") {
-//         menu.user.password = "";
-//         return menu;
-//       } else {
-//         return menu;
-//       }
-//     });
+  try {
+    const feedbacks = await Feedback.find(searchObj)
+      .skip(pageSize * pageIndex - pageSize)
+      .limit(parseInt(pageSize))
+      // .populate("user")
 
-//     // let count = await Menus.find(searchObj).countDocuments();
-//     const count = menus.length;
-//     let totalPages = Math.ceil(count / pageSize);
-//     let pagedModel = new PagedModel(pageIndex, pageSize, totalPages, menus);
+      .sort({ createdTime: "desc" });
+    // let arrayMenus = [];
+    // for (let i = 0; i < menus.length; i++) {
+    //   if (menus[i].parent != null) {
+    //     let parentName = menus.find(
+    //       (item) => item.id.toString() == menus[i].parent.toString()
+    //     );
+    //     menus[i].parent = parentName;
+    //   }
+    // }
+    // res.send(feedbacks);
+    // menus = menus.map((menu) => {
+    //   // console.log(menus)
+    //   if (menu.user != undefined && menu.user != null && menu.user != "") {
+    //     menu.user.password = "";
+    //     return menu;
+    //   } else {
+    //     return menu;
+    //   }
+    // });
 
-//     res.json(pagedModel);
-//   } catch (error) {
-//     let response = new ResponseModel(404, error.message, error);
-//     res.status(404).json(response);
-//   }
-// }
+    // let count = await Menus.find(searchObj).countDocuments();
+    const count = feedbacks.length;
+    let totalPages = Math.ceil(count / pageSize);
+    let pagedModel = new PagedModel(pageIndex, pageSize, totalPages, feedbacks);
+
+    res.json(pagedModel);
+  } catch (error) {
+    console.log(`loi`);
+    let response = new ResponseModel(404, error.message, error);
+    res.status(404).json(response);
+  }
+}
 
 // async function getMenuById(req, res) {
 //   if (isValidObjectId(req.params.id)) {
@@ -199,6 +206,7 @@ exports.createFeedback = createFeedback;
 exports.getAllFeedbacks = getAllFeedbacks;
 exports.deleteFeedback = deleteFeedback;
 exports.updateFeedback = updateFeedback;
+exports.getPagingFeedbacks = getPagingFeedbacks;
 
 // exports.getMenuBySlug = getMenuBySlug;
 // exports.getPagingMenus = getPagingMenus;

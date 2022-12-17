@@ -4,13 +4,13 @@ const { Schema } = mongoose;
 
 let feedbackSchema = new Schema(
   {
-    userName: {
+    feedbackName: {
       type: String,
     },
-    content: {
+    feedbackContent: {
       type: String,
     },
-    rate: {
+    feedbackRate: {
       type: Number,
       default: 5,
     },
