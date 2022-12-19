@@ -25,10 +25,12 @@ let postSchema = new Schema(
     content: {
       type: String,
     },
-    menu: {
-      type: Schema.Types.ObjectId,
-      ref: "Menus",
-    },
+    menu: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: "Menus",
+      },
+    ],
     // category: {
     //     type: Schema.Types.ObjectId,
     //     ref: 'Categories'

@@ -3,7 +3,7 @@ const router = express.Router();
 const postController = require("../controllers/postController");
 const middlewares = require("./middlewares");
 
-router.post("/insert", postController.createPost);
+router.post("/insert",middlewares.authorize, postController.createPost);
 router.put("/update/:id", middlewares.authorize, postController.updatePost);
 router.delete("/delete/:id", middlewares.authorize, postController.deletePost);
 router.get("/getById/:id", postController.getPostById);
